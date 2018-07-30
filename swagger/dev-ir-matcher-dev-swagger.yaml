@@ -1,5 +1,5 @@
 ---
-/Users/hagi/Personal/ir-matcher/swagger/dev-ir-matcher-dev-swagger.yamlswagger: '2.0'
+swagger: '2.0'
 info:
   version: '2018-07-07T07:38:11Z'
   title: ir-matcher
