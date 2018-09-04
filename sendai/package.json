@@ -1,0 +1,35 @@
+{
+  "name": "sendai",
+  "version": "0.0.1",
+  "description": "This is backend.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hagi013/ir-matcher.git"
+  },
+  "keywords": [
+    "IR",
+    "Investment"
+  ],
+  "author": "Haaagiii",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Hagi013/ir-matcher/issues"
+  },
+  "homepage": "https://github.com/Hagi013/ir-matcher#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.270.1",
+    "bluebird": "^3.5.1",
+    "jest": "^23.3.0",
+    "serverless": "^1.28.0",
+    "serverless-localstack": "^0.2.3"
+  }
+}

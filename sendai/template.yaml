@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sample SAM Template for IR-Matcher Backend Lambda
+
+
+Parameters:
+  Environments:
+    Type: String
+    AllowedValues:
+      - dev
+      - prod
+      - stg
+      - local
+    Default: dev
+
+Globals:
+  Function:
+    Runtime: nodejs8.10
+    Timeout: 300
+    MemorySize: 500
+  Api:
+    Cors:
+      AllowMethods: "'OPTIONS,GET,POST,DELETE'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      AllowOrigin: "'*'"
+    MethodSettings:
+      - DataTraceEnabled: true
+        LoggingLevel: 'ERROR'
+        ResourcePath: '/*'
+        HttpMethod: '*'
+
+
+Resources:
+
+  InvestorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # CodeUri: # sendai.zip
+      Handler: src/api/investor-handler.getInvestors
+      Environment:
+        Variables:
+          PARAM1: VALUEAAA2
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/lambda_basic_execution"
+      Events:
+        IrMatcher:
+          Type: Api
+          Properties:
+            Path: /investor
+            Method: get
+
+  InvestorByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/api/investor-handler.getInvestorById
+      Environment:
+        Variables:
+          PARAM1: VALUEBB
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/lambda_basic_execution"
+      Events:
+        IrMatcher:
+          Type: Api
+          Properties:
+            Path: /investor/{id}
+            Method: get
+
+Outputs:
+
+  IRMatcherApiBaseUri:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+
+  InvestorFunction:
+    Description: "InvestorFunction ARN"
+    Value: !GetAtt InvestorFunction.Arn
+
+  InvestorByIdFunction:
+    Description: "InvestorByIdFunction ARN"
+    Value: !GetAtt InvestorByIdFunction.Arn
