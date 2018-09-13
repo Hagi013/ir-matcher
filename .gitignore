@@ -9,3 +9,6 @@ jspm_packages
 .idea/
 
 template-output.yaml
+
+*.js.map
+*hongkong/src/*.js
