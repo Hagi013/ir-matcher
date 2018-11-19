@@ -6,8 +6,36 @@ info:
 host: 0w7b9ej8ok.execute-api.ap-northeast-1.amazonaws.com
 basePath: /dev
 schemes:
-  - https
+- https
 paths:
+  /investor:
+    post:
+      summary: "投資家の初期登録です"
+      description: "投資家用初期登録画面で使用"
+      parameters:
+      - in: body
+        name: investor
+        description: "投資家の登録"
+        schema:
+          type: "object"
+          required:
+          - nickname
+          - email
+          - password
+          properties:
+            nickname:
+              type: "string"
+              example: "タロー"
+            email:
+              type: "string"
+              example: "abc.efg@abc.com"
+            password:
+              type: "string"
+              example: ""
+      responses:
+        200:
+          description: "OK"
+
   /company/list/{offset}:
     get:
       summary: "企業一覧を返すAPIです。offsetにてページングを切り替えます。"
@@ -84,7 +112,7 @@ paths:
                         unit:
                           type: "string"
                           example: "億円"
-                    industry:
+                    businessCategory:
                       type: "string"
                       example: "IT/ソフトウェア"
 
@@ -162,21 +190,671 @@ paths:
                 items:
                   type: "object"
                   properties:
-                      from:
-                        type: "string"
-                        example: "○○株式会社"
-                      ranking:
-                        type: "integer"
-                        format: "int64"
-                        example: 1
-  /investor/{id}:
+                    from:
+                      type: "string"
+                      example: "○○株式会社"
+                    ranking:
+                      type: "integer"
+                      format: "int64"
+                      example: 1
+
+  /search/companies:
+    post:
+      summary: "投資家の企業検索機能です"
+      description: "投資家用画面における企業の検索で使用"
+      parameters:
+      - in: body
+        name: condition
+        description: "企業の検索"
+        schema:
+          type: "object"
+          properties:
+            companyName:
+              type: "string"
+              example: "ABC株式会社"
+            retail:
+              description: "売上規模"
+              type: "object"
+              properties:
+                amount:
+                  type: "integer"
+                  format: "int64"
+                  example: 2000
+                unit:
+                  type: "string"
+                  example: "億円"
+            businessCategory:
+              type: "string"
+              example: "IT"
+            retion:
+              type: "string"
+              example: "東京"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              companies:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    companyId:
+                      type: "string"
+                      example: "1531552450#company#1"
+                    companyName:
+                      type: "string"
+                      example: "ABC株式会社"
+                    performanceHistory:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          retail:
+                            type: "object"
+                            properties:
+                              amount:
+                                type: "integer"
+                                format: "int64"
+                                example: 2000
+                              unit:
+                                type: "string"
+                                example: "億円"
+                          year:
+                            type: "integer"
+                            format: "int4"
+                            example: 2017
+                          profit:
+                            type: "object"
+                            properties:
+                              amount:
+                                type: "integer"
+                                format: "int64"
+                                example: 150
+                              unit:
+                                type: "string"
+                                example: "億円"
+                    capitalStock:
+                      type: "object"
+                      properties:
+                        capitalStock:
+                          type: "integer"
+                          format: "int64"
+                          example: 3000
+                        unit:
+                          type: "string"
+                          example: "億円"
+                    businessCategory:
+                      type: "string"
+                      example: "IT/ソフトウェア"
+
+  /investor/profile:
     get:
-      summary: "投資家のprofileを返すAPIです。認証情報がheaderに入り、サーバー側ではidとheaderを付き合わせることで、Userは他のprofileを確認できないようにする。"
+      summary: "投資家のprofileを返すAPIです。認証情報がheaderに入り、Userは他のprofileを確認できないようにする。"
       description: "投資家用プロフィール編集画面で使用"
+      responses:
+        200:
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          schema:
+            type: "object"
+            properties:
+              nickname:
+                type: "string"
+                example: "タロー"
+              email:
+                type: "string"
+                example: "abc.efg@abc.com"
+              imagePath:
+                type: "string"
+                example: "https://s3.ap-northeast-1.amazonaws.com/dev-ir-matcher/investor/1531552450(id)/1531553450/aaaaaaaaa.jpg"
+              blogLink:
+                type: "string"
+                example: "https://www.hatena.ne.jp/1234567"
+              businessCategory:
+                type: "string"
+                example: "IT、農業"
+              type:
+                type: "string"
+                example: "個人、法人"
+              birthday:
+                type: "object"
+                properties:
+                  year:
+                    type: "number"
+                    format: "int64"
+                  month:
+                    type: "number"
+                    format: "int64"
+                  date:
+                    type: "number"
+                    format: "int64"
+              oneWord:
+                type: "string"
+                example: "頑張るぞ"
+              profile:
+                type: "string"
+                example: "どうぞよろしくお願いいたします。私はうんたらかんたら〜..."
+              holdingsHistory:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    start:
+                      type: "object"
+                      properties:
+                        year:
+                          type: "number"
+                          format: "int64"
+                        month:
+                          type: "number"
+                          format: "int64"
+                        date:
+                          type: "number"
+                          format: "int64"
+                    end:
+                      type: "object"
+                      properties:
+                        year:
+                          type: "integer"
+                          format: "int64"
+                        month:
+                          type: "integer"
+                          format: "int64"
+                        date:
+                          type: "integer"
+                          format: "int64"
+                    companyName:
+                      type: "string"
+                      example: "EFG株式会社"
+                    numberOfShares:
+                      type: "integer"
+                      format: "int64"
+              assetBreakdown:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    businessCategory:
+                      type: "string"
+                      example: "不動産"
+                    amount:
+                      type: "integer"
+                      format: "int64"
+                      example: 100
+                    unit:
+                      type: "string"
+                      example: "億円"
+
+  /user/list/{offset1}/message/list/{offset2}:
+    get:
+      summary: "メッセージの相手とそれに付随するメッセージを返すAPIです"
+      description: "メッセージ一覧画面で使用"
+      parameters:
+      - name: "offset1"
+        in: "path"
+        description: "取得したいUserリストのoffset"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "offset2"
+        in: "path"
+        description: "取得したいMessageリストのoffset"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          schema:
+            type: "object"
+            properties:
+              users:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    type:
+                      type: "string"
+                      example: "investor or company"
+                    investor:
+                      type: "object"
+                      properties:
+                        investorId:
+                          type: "string"
+                          example: "1531552450#investor#1"
+                        nickname:
+                          type: "string"
+                          example: "タロー"
+                    company:
+                      type: "object"
+                      properties:
+                        companyId:
+                          type: "string"
+                          example: "1531552450#company#1"
+                        companyName:
+                          type: "string"
+                          example: "ABC株式会社"
+                    messages:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          messageId:
+                            type: "string"
+                            example: "1531552450#investor#1#1531552450#company#1message#10"
+                            description: "IDの構造: userid(from)#userid(to)#message#id"
+                          timestamp:
+                            type: "string"
+                            example: "1531552450"
+                          from:
+                            type: "string"
+                            example: "1531552450#investor#1"
+                          to:
+                            type: "string"
+                            example: "1531552450#company#1"
+                          content:
+                            type: "string"
+                            example: "Hello! </br> I'm ichiro!!"
+  /user/{id}/message/list/{offset}:
+    get:
+      summary: "特定のUserとのやりとりを確認するとき"
+      description: "メッセージ一覧画面のメッセージを更新する時に使用"
       parameters:
       - name: "id"
         in: "path"
-        description: "investorのid(例: 1531552450#investor#1)"
+        description: "取得したい相手のuser id"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "offset"
+        in: "path"
+        description: "取得したいMessageリストのoffset"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          schema:
+            type: "object"
+            properties:
+              messages:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    messageId:
+                      type: "string"
+                      example: "1531552450#investor#1#1531552450#company#1message#10"
+                      description: "IDの構造: userid(from)#userid(to)#message#id"
+                    timestamp:
+                      type: "string"
+                      example: "1531552450"
+                    from:
+                      type: "string"
+                      example: "1531552450#investor#1"
+                    to:
+                      type: "string"
+                      example: "1531552450#company#1"
+                    content:
+                      type: "string"
+                      example: "Hello! </br> I'm ichiro!!"
+
+  /company:
+    post:
+      summary: "企業用の登録です"
+      description: "企業用初期登録画面と企業管理ページで使用"
+      parameters:
+      - in: body
+        name: company
+        description: "企業の登録/更新"
+        schema:
+          type: "object"
+          required:
+          - companyName
+          - securitiesCode
+          - email
+          properties:
+            companyName:
+              type: "string"
+              example: "タロー"
+            securitiesCode:
+              type: "string"
+              description: "証券コード"
+              example: "9210"
+            email:
+              type: "string"
+              example: "abc.efg@abc.com"
+      responses:
+        200:
+          description: "OK"
+
+  /company/member:
+    post:
+      summary: "企業の担当者登録です"
+      description: "企業担当者の初期登録画面と企業担当者プロフィールページで使用"
+      parameters:
+      - in: body
+        name: company
+        description: "企業の登録/更新"
+        schema:
+          type: "object"
+          required:
+          - name
+          - email
+          - password
+          - position
+          - join
+          properties:
+            name:
+              type: "string"
+              example: "David Beckham"
+            email:
+              type: "string"
+              example: "abc.efg@abc.com"
+            position:
+              type: "string"
+              example: "メンバー"
+            join:
+              type: "object"
+              properties:
+                year:
+                  type: "integer"
+                  format: "int64"
+                month:
+                  type: "integer"
+                  format: "int64"
+                date:
+                  type: "integer"
+                  format: "int64"
+      responses:
+        200:
+          description: "OK"
+
+  /search/investors:
+    post:
+      summary: "投資家の企業検索機能です"
+      description: "投資家用画面における企業の検索で使用"
+      parameters:
+      - in: body
+        name: condition
+        description: "投資家の検索"
+        schema:
+          type: "object"
+          properties:
+            investorName:
+              type: "string"
+              example: "高橋太郎"
+            assets:
+              description: "資産規模"
+              type: "object"
+              properties:
+                amount:
+                  type: "integer"
+                  format: "int64"
+                  example: 2000
+                unit:
+                  type: "string"
+                  example: "億円"
+            businessCategory:
+              type: "string"
+              example: "IT"
+            retion:
+              type: "string"
+              example: "東京"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: "object"
+            properties:
+              investorId:
+                type: "string"
+                example: "1531552450#investor#1"
+              nickname:
+                type: "string"
+                example: "タロー"
+              email:
+                type: "string"
+                example: "abc.efg@abc.com"
+              imagePath:
+                type: "string"
+                example: "https://s3.ap-northeast-1.amazonaws.com/dev-ir-matcher/investor/1531552450(id)/1531553450/aaaaaaaaa.jpg"
+              blogLink:
+                type: "string"
+                example: "https://www.hatena.ne.jp/1234567"
+              businessCategory:
+                type: "string"
+                example: "IT、農業"
+              type:
+                type: "string"
+                example: "個人、法人"
+              birthday:
+                type: "object"
+                properties:
+                  year:
+                    type: "number"
+                    format: "int64"
+                  month:
+                    type: "number"
+                    format: "int64"
+                  date:
+                    type: "number"
+                    format: "int64"
+              oneWord:
+                type: "string"
+                example: "頑張るぞ"
+              profile:
+                type: "string"
+                example: "どうぞよろしくお願いいたします。私はうんたらかんたら〜..."
+              holdingsHistory:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    start:
+                      type: "object"
+                      properties:
+                        year:
+                          type: "number"
+                          format: "int64"
+                        month:
+                          type: "number"
+                          format: "int64"
+                        date:
+                          type: "number"
+                          format: "int64"
+                    end:
+                      type: "object"
+                      properties:
+                        year:
+                          type: "integer"
+                          format: "int64"
+                        month:
+                          type: "integer"
+                          format: "int64"
+                        date:
+                          type: "integer"
+                          format: "int64"
+                    companyName:
+                      type: "string"
+                      example: "EFG株式会社"
+                    numberOfShares:
+                      type: "integer"
+                      format: "int64"
+              assetBreakdown:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    businessCategory:
+                      type: "string"
+                      example: "不動産"
+                    amount:
+                      type: "integer"
+                      format: "int64"
+                      example: 100
+                    unit:
+                      type: "string"
+                      example: "億円"
+
+  /investor/list/{offset}:
+    get:
+      summary: "投資家一覧を返すAPIです。offsetにてページングを切り替えます。"
+      description: "企業担当者用Home画面で使用"
+      parameters:
+      - name: "offset"
+        in: "path"
+        description: "取得したいリストのoffset"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          schema:
+            type: "object"
+            properties:
+              investors:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    investorId:
+                      type: "string"
+                      example: "1531552450#investor#1"
+                    nickname:
+                      type: "string"
+                      example: "タロー"
+                    email:
+                      type: "string"
+                      example: "abc.efg@abc.com"
+                    imagePath:
+                      type: "string"
+                      example: "https://s3.ap-northeast-1.amazonaws.com/dev-ir-matcher/investor/1531552450(id)/1531553450/aaaaaaaaa.jpg"
+                    blogLink:
+                      type: "string"
+                      example: "https://www.hatena.ne.jp/1234567"
+                    businessCategory:
+                      type: "string"
+                      example: "IT、農業"
+                    type:
+                      type: "string"
+                      example: "個人、法人"
+                    birthday:
+                      type: "object"
+                      properties:
+                        year:
+                          type: "number"
+                          format: "int64"
+                        month:
+                          type: "number"
+                          format: "int64"
+                        date:
+                          type: "number"
+                          format: "int64"
+                    oneWord:
+                      type: "string"
+                      example: "頑張るぞ"
+                    profile:
+                      type: "string"
+                      example: "どうぞよろしくお願いいたします。私はうんたらかんたら〜..."
+                    holdingsHistory:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          start:
+                            type: "object"
+                            properties:
+                              year:
+                                type: "number"
+                                format: "int64"
+                              month:
+                                type: "number"
+                                format: "int64"
+                              date:
+                                type: "number"
+                                format: "int64"
+                          end:
+                            type: "object"
+                            properties:
+                              year:
+                                type: "integer"
+                                format: "int64"
+                              month:
+                                type: "integer"
+                                format: "int64"
+                              date:
+                                type: "integer"
+                                format: "int64"
+                          companyName:
+                            type: "string"
+                            example: "EFG株式会社"
+                          numberOfShares:
+                            type: "integer"
+                            format: "int64"
+                    assetBreakdown:
+                      type: "array"
+                      items:
+                        type: "object"
+                        properties:
+                          businessCategory:
+                            type: "string"
+                            example: "不動産"
+                          amount:
+                            type: "integer"
+                            format: "int64"
+                            example: 100
+                          unit:
+                            type: "string"
+                            example: "億円"
+
+  /investor/profile/{id}:
+    get:
+      summary: "投資家のprofileを返すAPIです。(/investor/profileと内容は同じ)"
+      description: "企業担当者用Home画面で使用"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "取得したい投資家のid"
         required: true
         type: "string"
       responses:
@@ -206,12 +884,12 @@ paths:
               blogLink:
                 type: "string"
                 example: "https://www.hatena.ne.jp/1234567"
-              industry:
+              businessCategory:
                 type: "string"
                 example: "IT、農業"
-              category:
+              type:
                 type: "string"
-                example: "男性、女性、法人"
+                example: "個人、法人"
               birthday:
                 type: "object"
                 properties:
@@ -280,17 +958,11 @@ paths:
                     unit:
                       type: "string"
                       example: "億円"
-  /investor/list/{offset}:
+
+  /company/profile:
     get:
-      summary: "投資家一覧を返すAPIです"
-      description: "企業用Home画面で使用"
-      parameters:
-      - name: "offset"
-        in: "path"
-        description: "取得したいリストのoffset"
-        required: true
-        type: "integer"
-        format: "int64"
+      summary: "自分が所属する企業を返すAPIです。headerの認証情報にて所属企業を確認する"
+      description: "企業管理画面で使用"
       responses:
         200:
           description: 200 response
@@ -306,117 +978,139 @@ paths:
           schema:
             type: "object"
             properties:
-              investors:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    investorId:
-                      type: "string"
-                      example: "1531552450#investor#1"
-                    nickname:
-                      type: "string"
-                      example: "タロー"
-                    email:
-                      type: "string"
-                      example: "abc.efg@abc.com"
-                    imagePath:
-                      type: "string"
-                      example: "https://s3.ap-northeast-1.amazonaws.com/dev-ir-matcher/investor/1531552450(id)/1531553450/aaaaaaaaa.jpg"
-                    blogLink:
-                      type: "string"
-                      example: "https://www.hatena.ne.jp/1234567"
-                    industry:
-                      type: "string"
-                      example: "IT、農業"
-                    category:
-                      type: "string"
-                      example: "男性、女性、法人"
-                    birthday:
+              companies:
+                type: "object"
+                properties:
+                  companyId:
+                    type: "string"
+                    example: "1531552450#company#1"
+                  companyName:
+                    type: "string"
+                    example: "ABC株式会社"
+                  companyImageUrl:
+                    type: "string"
+                    example: "https://s3.ap.northeast1.amazon.com/aoichtbaZgba"
+                    description: "本社画像など"
+                  ceoName:
+                    type: "string"
+                    example: "高橋太郎"
+                    description: "代表取締役の名前"
+                  foundationDay:
+                    type: "object"
+                    properties:
+                      year:
+                        type: "number"
+                        format: "int64"
+                      month:
+                        type: "number"
+                        format: "int64"
+                      date:
+                        type: "number"
+                        format: "int64"
+                  location:
+                    type: "object"
+                    properties:
+                      zipCode:
+                        type: "string"
+                        description: "郵便番号"
+                      prefecture:
+                        type: "string"
+                      city:
+                        type: "string"
+                      streetAddress:
+                        type: "string"
+                  performanceHistory:
+                    type: "array"
+                    items:
                       type: "object"
                       properties:
+                        retail:
+                          type: "object"
+                          properties:
+                            amount:
+                              type: "integer"
+                              format: "int64"
+                              example: 2000
+                            unit:
+                              type: "string"
+                              example: "億円"
                         year:
-                          type: "number"
-                          format: "int64"
-                        month:
-                          type: "number"
-                          format: "int64"
-                        date:
-                          type: "number"
-                          format: "int64"
-                    oneWord:
-                      type: "string"
-                      example: "頑張るぞ"
-                    profile:
-                      type: "string"
-                      example: "どうぞよろしくお願いいたします。私はうんたらかんたら〜..."
-                    holdingsHistory:
-                      type: "array"
-                      items:
-                        type: "object"
-                        properties:
-                          start:
-                            type: "object"
-                            properties:
-                              year:
-                                type: "number"
-                                format: "int64"
-                              month:
-                                type: "number"
-                                format: "int64"
-                              date:
-                                type: "number"
-                                format: "int64"
-                          end:
-                            type: "object"
-                            properties:
-                              year:
-                                type: "integer"
-                                format: "int64"
-                              month:
-                                type: "integer"
-                                format: "int64"
-                              date:
-                                type: "integer"
-                                format: "int64"
-                          companyName:
-                            type: "string"
-                            example: "EFG株式会社"
-                          numberOfShares:
-                            type: "integer"
-                            format: "int64"
-                    assetBreakdown:
-                      type: "array"
-                      items:
-                        type: "object"
-                        properties:
-                          category:
-                            type: "string"
-                            example: "不動産"
-                          amount:
-                            type: "integer"
-                            format: "int64"
-                            example: 100
-                          unit:
-                            type: "string"
-                            example: "億円"
-  /user/list/{offset1}/message/list/{offset2}:
+                          type: "integer"
+                          format: "int4"
+                          example: 2017
+                        profit:
+                          type: "object"
+                          properties:
+                            amount:
+                              type: "integer"
+                              format: "int64"
+                              example: 150
+                            unit:
+                              type: "string"
+                              example: "億円"
+                  capitalStock:
+                    type: "object"
+                    properties:
+                      capitalStock:
+                        type: "integer"
+                        format: "int64"
+                        example: 3000
+                      unit:
+                        type: "string"
+                        example: "億円"
+                  businessCategory:
+                    type: "string"
+                    example: "IT/ソフトウェア"
+                  members:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        companyMemberId:
+                          type: "string"
+                          example: "1531552450#company#1#member#1"
+                        name:
+                          type: "string"
+                          example: "David Beckham"
+                        email:
+                          type: "string"
+                          example: "abc.efg@abc.com"
+                        imageUrl:
+                          type: "string"
+                          example: "https://s3..."
+                        department:
+                          type: "string"
+                          example: "部・課"
+                        position:
+                          type: "string"
+                          example: "メンバー"
+                        join:
+                          type: "object"
+                          properties:
+                            year:
+                              type: "integer"
+                              format: "int64"
+                            month:
+                              type: "integer"
+                              format: "int64"
+                            date:
+                              type: "integer"
+                              format: "int64"
+                        administratorFlag:
+                          type: "boolean"
+                          example: true
+                          description:  "メンバーの追加ができるかどうか"
+
+  /company/member/profile/{id}:
     get:
-      summary: "メッセージの相手を返すAPIです"
-      description: "メッセージ一覧画面で使用"
+      summary: "企業メンバー用のプロフィール確認用APIです。"
+      description: "企業管理画面の中の担当者管理タブで使用"
       parameters:
-      - name: "offset1"
+      - name: "id"
         in: "path"
-        description: "取得したいUserリストのoffset"
+        description: "取得したい企業メンバーのid"
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "offset2"
-        in: "path"
-        description: "取得したいMessageリストのoffset"
-        required: true
-        type: "integer"
-        format: "int64"
+        type: "string"
       responses:
         200:
           description: 200 response
@@ -432,49 +1126,92 @@ paths:
           schema:
             type: "object"
             properties:
-              users:
-                type: "array"
-                items:
-                  type: "object"
-                  properties:
-                    type:
-                      type: "string"
-                      example: "investor or company"
-                    investor:
-                      type: "object"
-                      properties:
-                        investorId:
-                          type: "string"
-                          example: "1531552450#investor#1"
-                        nickname:
-                          type: "string"
-                          example: "タロー"
-                    company:
-                      type: "object"
-                      properties:
-                        companyId:
-                          type: "string"
-                          example: "1531552450#company#1"
-                        companyName:
-                          type: "string"
-                          example: "ABC株式会社"
-                    messages:
-                      type: "array"
-                      items:
-                        type: "object"
-                        properties:
-                          messageId:
-                            type: "string"
-                            example: "1531552450#investor#1#1531552450#company#1message#10"
-                          timestamp:
-                            type: "string"
-                            example: "1531552450"
-                          from:
-                            type: "string"
-                            example: "1531552450#investor#1"
-                          to:
-                            type: "string"
-                            example: "1531552450#company#1"
-                          content:
-                            type: "string"
-                            example: "Hello! </br> I'm ichiro!!"
+              companies:
+                type: "object"
+                properties:
+                  name:
+                    type: "string"
+                    example: "David Beckham"
+                  email:
+                    type: "string"
+                    example: "abc.efg@abc.com"
+                  imageUrl:
+                    type: "string"
+                    example: "https://s3..."
+                  department:
+                    type: "string"
+                    example: "部・課"
+                  position:
+                    type: "string"
+                    example: "メンバー"
+                  profile:
+                    type: "string"
+                    example: "よろしくお願いします。"
+                  join:
+                    type: "object"
+                    properties:
+                      year:
+                        type: "integer"
+                        format: "int64"
+                      month:
+                        type: "integer"
+                        format: "int64"
+                      date:
+                        type: "integer"
+                        format: "int64"
+
+  /company/member/profile:
+    get:
+      summary: "企業メンバー用のプロフィール確認用APIです。"
+      description: "企業管理画面の中の担当者管理タブで使用"
+      responses:
+        200:
+          description: 200 response
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+            Access-Control-Allow-Methods:
+              type: string
+            Access-Control-Allow-Credentials:
+              type: string
+            Access-Control-Allow-Headers:
+              type: string
+          schema:
+            type: "object"
+            properties:
+              companies:
+                type: "object"
+                properties:
+                  companyMemberId:
+                    type: "string"
+                    example: "1531552450#company#1#member#1"
+                  name:
+                    type: "string"
+                    example: "David Beckham"
+                  email:
+                    type: "string"
+                    example: "abc.efg@abc.com"
+                  imageUrl:
+                    type: "string"
+                    example: "https://s3..."
+                  department:
+                    type: "string"
+                    example: "部・課"
+                  position:
+                    type: "string"
+                    example: "メンバー"
+                  profile:
+                    type: "string"
+                    example: "よろしくお願いします。"
+                  join:
+                    type: "object"
+                    properties:
+                      year:
+                        type: "integer"
+                        format: "int64"
+                      month:
+                        type: "integer"
+                        format: "int64"
+                      date:
+                        type: "integer"
+                        format: "int64"
