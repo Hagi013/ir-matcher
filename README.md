@@ -13,5 +13,9 @@ http://localhost:18081
 sh <path-to-swagger>/start.sh
 ```
 
-- rendering
+2. rendering
 接続先に接続後、`dev-ir-matcher-dev-swagger.yaml` をブラウザにドラッグする。
+
+3. 書き方
+[参考](https://techblog.zozo.com/entry/swagger_yaml)
+
